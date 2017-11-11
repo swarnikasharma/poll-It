@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <title>Document</title>
+
+
+<style>
+form {
+    border: 3px solid #f1f1f1;
+    background-color: olive;
+}
+button {
+    background-color:#25383C;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 90%;
+
+}
+table,th {
+    text-align: left;
+    border: 3px olive;
+    border-spacing: 5px;
+    width:60%;
+    height:40%;
+    background-color: orange;
+}
+tr,td {
+    text-align: left;
+    border: 3px olive;
+    border-spacing: 5px;
+    width:10%;
+    height:30%
+    background-color: white;
+}
+input[type="text"], textarea {
+
+  background-color : orange;
+  border: orange;
+
+}
+
+
+</style>
+<body>
+<form id="form">
+  <div class="row">
+    <div class="col-sm-1">
+    <Button id="back" class="btn btn-sm"> Back </Button>
+    </div>
+    <div class="col-sm-10"></div>
+    <div class="col-sm-1">
+    <Button id="logout"  class="btn btn-sm"> Logout </Button>
+    </div>
+  </div>
+  <br>
+  <div class="container">
+  <div class="row">
+
+    <table id="options">
+      <th id="head"></th>
+    </table>
+    <Button class="btn btn-md" id="saveVote"><b>Save Vote</Button>
+    <Button class="btn btn-md" id="editPoll"><b>Save Changes To Poll</Button>
+    <Button class="btn btn-md" id="removePoll"><b>Remove Poll</Button>
+  </div>
+</div >
+<div class="container" >
+  <div class="row" id="chartContainer" style="height: 300px; width: 100%;color:orange;">
+</div>
+</div>
+
+</form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+
+<script type="text/javascript">
+var opt,p,q,u,o1,o2,o3,o4,v1,v2,v3,v4;
+var poll,pq;
+$(document).ready(function(){
+
+  $.ajax({
+    type: 'POST',
+    url: '/pollData',
+    //data: obj,
+    success: function(data){
+      if(data.length==0)
+      {
+              alert("No Polls Yet!!!");
+
+      }
+      else
+      {
+
+          console.log("polls so far....");
+
+        //populate the page
+      poll=data[0];
+      console.log("polldata:"+JSON.stringify(poll.pollname));
+      pq=JSON.stringify(poll.pollname);
+
+      // localStorage.setItem("pq",JSON.stringify(poll.pollname));
+console.log("hwwwww");
+      console.log(pq);
+
+
+        for (var i = 0; i < data.length; i++) {
+          p=data[i].pollname;
+          q=data[i].ques1;
+          u=data[i].username;
+          o1=data[i].option1;
+          o2=data[i].option2;
+          o3=data[i].option3;
+          o4=data[i].option4;
+          v1=data[i].vote1;
+          v2=data[i].vote2;
+          v3=data[i].vote3;
+          v4=data[i].vote4;
+
+
+          //set question
+
+          var thead="<th><b>"+q+"</th>";
+          $("#head").append(thead);
+          if(o1=="")
+          {//hide
+          }
+          else {
+            var rad1="<tr><td><input type=radio name=options id=option1 value="+o1+"checked=unchecked onclick=saveOption(1)></td><td><input type=text  id=val1 value="+o1+"></td></tr>";
+            $("#options").append(rad1);
+          }
+          if(o2=="")
+          {//hide
+
+          }else {
+            var rad1="<tr><td><input type=radio name=options id=option2 value="+o2+"checked=unchecked onclick=saveOption(2)></td><td><input type=text id=val2 value="+o2+"></td></tr>";
+            $("#options").append(rad1);
+
+          }
+          if(o3=="")
+          {//hide
+          }
+          else{
+            var rad1="<tr><td><input type=radio name=options id=option3 value="+o3+"checked=unchecked onclick=saveOption(3)></td><td><input type=text id=val3 value="+o3+"></td></tr>";
+            $("#options").append(rad1);
+
+          }
+          if(o4=="")
+          {//hide
+          }
+          else {
+            var rad1="<tr><td><input type=radio name=options id=option4 value="+o4+"checked=unchecked onclick=saveOption(4)></td><td><input type=text id=val4 value="+o4+"></td></tr>";
+            $("#options").append(rad1);
+
+          }
+        }
+        var chart = new CanvasJS.Chart("chartContainer", {
+
+          title:{
+            text:p
+
+        //  text:"pie"
+          },
+          data: [//array of dataSeries
+            { //dataSeries object
+
+             /*** Change type "column" to "bar", "area", "line" or "pie"***/
+             type: "pie",
+             dataPoints: [
+             { label:o1, y: v1 },
+             { label: o2, y: v2 },
+             { label: o3, y: v3 },
+             { label: o4, y: v4 },
+
+             ]
+           }
+           ]
+         });
+
+        chart.render();
+
+      }
+
+  }
+
+});
+$("#back").click(function(){
+  $.ajax({
+    type: 'GET',
+    url: '/home',
+    success: function(data){
+      window.location.pathname="/home"
+    }
+  });
+  return false;
+});
+$("#logout").click(function(){
+  $.ajax({
+    type: 'GET',
+    url: '/login',
+    success: function(data){
+      window.location.pathname="/login"
+    }
+  });
+  return false;
+});
+
+  $("#saveVote").click(function(){
+    var obj={
+    pollname:p,
+    username:u,
+    option:opt
+
+    };
+    console.log("option"+opt+" "+obj.option)
+    $.ajax({
+      type:   'POST',
+      url: '/saveVote',
+      data:obj,
+      success: function(data){
+        window.location.pathname="/home"
+      }
+    });
+    return false;
+  });
+  $("#removePoll").click(function(){
+    var obj={
+    pollname:p,
+    username:u,
+
+    };
+  //  console.log("option"+opt+" "+obj.option)
+    $.ajax({
+      type:   'POST',
+      url: '/removePoll',
+      data:obj,
+      success: function(data){
+        window.location.pathname="/home"
+      }
+    });
+    return false;
+  });
+  ////////////////////////////////////////////////////////////////////////
+  $("#editPoll").click(function(){
+    var o1="";
+    if($("#option1"))
+    o1=$("#val1").val();
+    var o2="";
+    if($("#option2"))
+    o2=$("#val2").val();
+    var o3="";
+    if($("#option3"))
+    o3=$("#val3").val();
+    var on4="";
+    if($("#option4"))
+    o4=$("#val4").val();
+
+    var obj={
+    pollname:p,
+    username:u,
+    ques1:q,
+    option1:o1,
+    option2:o2,
+    option3:o3,
+    option4:o4,
+    vote1:0,
+    vote2:0,
+    vote3:0,
+    vote4:0
+
+  };
+  //  console.log("option"+opt+" "+obj.option)
+  console.log(obj);
+  console.log("wow");
+    $.ajax({
+      type: 'POST',
+      url: '/editPoll',
+      data:obj,
+      success: function(data){
+        window.location.pathname="/home"
+      }
+    });
+    return false;
+  });
+
+});
+function saveOption(id)
+{
+  console.log("id="+id);
+  opt=id;
+}
+
+/*  window.onload = function () {
+    var chart = new CanvasJS.Chart("chartContainer", {
+
+      title:{
+        text: "pie"
+      },
+      data: [//array of dataSeries
+        { //dataSeries object
+
+         /*** Change type "column" to "bar", "area", "line" or "pie"***/
+        // type: "pie",
+        // dataPoints: [
+         /*{ label: poll.option1, y: poll.vote1 },
+         { label: poll.option2, y: poll.vote2 },
+         { label: poll.option3, y: poll.vote3 },
+         { label: poll.option4, y: poll.vote4 },
+         { label: "a", y: 29 },
+         { label: "b", y: 20 },
+         { label: "c", y: 40 },
+         { label: "d", y: 33 },
+         ]
+       }
+       ]
+     });
+
+    chart.render();
+  }*/
+</script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <title>Document</title>
+
+
+<style>
+
+table,tr,td {
+    text-align: left;
+    border: 3px olive;
+    border-spacing: 5px;
+    width:90%;
+    background-color: olive;
+}
+th {
+    text-align: left;
+    border: 3px olive;
+    border-spacing: 5px;
+    width:90%;
+    background-color: olive;
+}
+form {
+    border: 3px solid #f1f1f1;
+    background-color: olive;
+}
+button {
+    background-color:#25383C;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+</style>
+<body>
+<form>
+  <div class="row">
+    <div class="col-sm-1">
+    <Button id="back" class="btn btn-sm"> Back </Button>
+    </div>
+    <div class="col-sm-10"></div>
+    <div class="col-sm-1">
+    <Button id="logout"  class="btn btn-sm"> Logout </Button>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-md-2"></div></div>
+    <div class="row">
+      <div class="col-md-2"></div></div>
+
+  <div class="row">
+    <div class="col-md-2"></div>
+
+    <div class="col-md-4">
+        <a href="http://127.0.0.1:3443/createPoll"><button class="btn btn-sm" id="createPoll">Create Poll</button></a>
+    </div>
+        <!--<a href="http://127.0.0.1:3443/viewpoll">View Poll</a>-->
+    <div class="col-md-4">
+        <a href="http://127.0.0.1:3443/votePoll"><button class="btn btn-sm" id="votePoll">Vote Poll</button></a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <h4>Your created polls</h4>
+
+        <table id="polls_table" >
+        <tr>
+        <th colspan="4"><h5><b>Polls<b></h5></th>
+        <th colspan="5"><h5><b>Votes</h5></th>
+        <th>          </th>
+        </tr>
+        </table>
+    </div>
+  </div>
+</div>
+
+</form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+<script type="text/javascript">
+var polls=new Array();
+    $(document).ready(function(){
+      console.log("inhome ajax");
+      $.ajax({
+        type: 'POST',
+        url: '/view_ur_poll',
+        //data: obj,
+        success: function(data){
+          if(data.length==0)
+          {
+                  alert("No Polls Yet!!!");
+
+          }
+          else
+          {
+
+              console.log("polls so far....");
+
+            //populate the table polls_table
+            polls=data;
+
+
+            for (var i = 0; i < data.length; i++) {
+            var q=data[i].pollname;
+
+          //  tr.append("<td>" + data[i].option1 + "</td>");
+          //  tr.append("<td>" + data[i].option2 + "</td>");
+          //  tr.append("<td>" + data[i].option3 + "</td>");
+          //  tr.append("<td>" + data[i].option4 + "</td>");
+          var val=data[i].vote1+data[i].vote2+data[i].vote3+data[i].vote4;
+          var id=(i);
+            console.log(id);
+          var b="btn btn-sm";
+            var entry="<tr><td colspan=4><b>"+q+"</td<t><t><td colspan=6><b>"+val+"</td><td><button class="+b+" id="+id+" onclick=displayPoll("+id+")>View</td><br></tr>";
+            $('#polls_table').append(entry);
+            //document.getElementById(id).style.padding = "0px 10px 20px 30px";
+
+          }
+        }
+      }
+      });
+      $("#votePoll").click(function(){
+        $.ajax({
+          type:   'GET',
+          url: '/viewAll',
+          success: function(data){
+            window.location.pathname="/viewAll"
+          }
+        });
+        return false;
+      });
+      $("#createPoll").click(function(){
+        $.ajax({
+          type: 'GET',
+          url: '/createPoll',
+          success: function(data){
+            window.location.pathname="/createPoll"
+          }
+        });
+        return false;
+      });
+      $("#back").click(function(){
+        $.ajax({
+          type: 'GET',
+          url: '/login',
+          success: function(data){
+            window.location.pathname="/login"
+          }
+        });
+        return false;
+      });
+      $("#logout").click(function(){
+        $.ajax({
+          type: 'GET',
+          url: '/login',
+          success: function(data){
+            window.location.pathname="/login"
+          }
+        });
+        return false;
+      });
+
+});
+function displayPoll(id){
+     console.log(id);
+
+    var pname=polls[id].pollname;
+    var uname=polls[id].username;
+    console.log(pname+' '+uname);
+    var obj={
+      "pollname":pname,
+      "username":uname
+    };
+    console.log(obj.pollname+" "+obj.username);
+     $.ajax({
+      type: 'POST',
+      url: '/votepoll',
+      data:obj,
+      success: function(data){
+        window.location.pathname="/viewpoll";
+
+      }
+    });
+    return false;
+  }
+
+</script>
+</body>
+</html>

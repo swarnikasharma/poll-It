@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <title>Document</title>
+  <style>
+
+  form {
+      border: 3px solid #f1f1f1;
+      background-color: olive;
+  }
+  button {
+      background-color:#25383C;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+  }
+  </style>
+<body>
+
+        <form>
+          <div class="row">
+            <div class="col-sm-1">
+            <Button id="back" class="btn btn-sm"> Back </Button>
+            </div>
+            <div class="col-sm-10"></div>
+            <div class="col-sm-1">
+            <Button id="logout"  class="btn btn-sm"> Logout </Button>
+            </div>
+          </div>
+
+
+          <div="container">
+                <div class="row">
+                  <div class="col-md-3"></div>
+                  <div class="col-md-6">
+                  <label>Enter your poll name</label>
+                  <input type="text" class="form-control" id="pollname" placeholder="pollname" name="pollname" required>
+
+                  <label>Enter your poll question</label>
+                  <input type="text" class="form-control" id="question" placeholder="Enter question" name="question" required>
+
+
+                  <label>Option1</label>
+                  <input type="text" class="form-control" id="opt1" placeholder="option1" name="opt1" required>
+
+                  <label>Option2</label>
+                  <input type="text" class="form-control" id="opt2" placeholder="option2" name="opt2" required>
+
+                  <label>Option3</label>
+                  <input type="text" class="form-control" id="opt3" placeholder="option3" name="opt3" required>
+
+                  <label>Option4</label>
+                  <input type="text" class="form-control" id="opt4" placeholder="option4" name="opt4" required>
+                  <button type="button" id="create_Poll" class="btn btn-sm">Create</button>
+
+                </div>
+                <div class="col-md-3"></div>
+
+                <!-- <div class="form-group">
+                  <input type="text" class="form-control"  id="otp" placeholder="Enter OTP" name="otp" required>
+                </div> -->
+
+                </div>
+              </div>
+
+
+        </form>
+
+
+
+<!--
+  <p><hr></p>
+  <a href="#/polls"
+  Back to Poll List</a>
+  <a href='http://127.0.0.1:3443/createPoll'>Create Poll</a>
+-->
+  </form>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <script type="text/javascript">
+  $(document).ready(function(){
+    $("#back").click(function(){
+      $.ajax({
+        type: 'GET',
+        url: '/home',
+        success: function(data){
+          window.location.pathname="/home"
+        }
+      });
+      return false;
+    });
+    $("#logout").click(function(){
+      $.ajax({
+        type: 'GET',
+        url: '/login',
+        success: function(data){
+          window.location.pathname="/login"
+        }
+      });
+      return false;
+    });
+
+  $("#create_Poll").click(function(){
+
+    console.log("here");
+    var username=localStorage.getItem("login_name");
+    var pollname=$('#pollname').val();
+    var que = $('#question').val();
+    var op1,op2,op3,op4;
+
+    op1 = $('#opt1').val();
+    op2 = $('#opt2').val();
+    op3 = $('#opt3').val();
+    op4 = $('#opt4').val();
+
+
+    console.log("inside login"+username);
+
+    var obj = {pollname:pollname,username:username,ques1:que,option1:op1,option2:op2,option3:op3,option4:op4};
+
+    $.ajax({
+      type: 'POST',
+      url: '/poll_user_database',
+      data: obj,
+      success: function(data){
+        //do something with the data via front-end framework
+        //location.reload();
+
+        console.log("saved ");
+
+         window.location.pathname="/home";
+      }
+    });
+  });
+});
+  </script>
+
+ </body>
+ </html>

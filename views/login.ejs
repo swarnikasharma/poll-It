@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <title>Document</title>
+
+<style>
+
+form {
+    border: 3px solid #f1f1f1;
+    background-color: olive;
+}
+
+input[type=text], input[type=password] {
+    width: 91%;
+    height:80%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: none
+    color:#25383C
+}
+
+button {
+    background-color:#25383C;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 90%;
+}
+
+.container {
+    padding: 16px;
+}
+
+</style>
+
+
+</head>
+<body>
+
+
+  <form >
+
+
+    <div class="container">
+
+      <div class="row">
+        <div class="col-md-6"></div>
+        <div class="col-md-4">
+          <h3><b><i>Welcome to Poll It!!</h3>
+          <h6>Create,Vote and Share......</h6>
+        </div>
+        <div class="col-md-2"></div>
+      </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <img src="https://s-media-cache-ak0.pinimg.com/originals/4e/5c/f7/4e5cf7d4ccb9c59b6620a9c71944d51e.png">
+          </div>
+          <div class="col-md-4">
+            <input type="text"  id="login_name" placeholder="Username" name="uname" required>
+            <input type="password" id="pass" placeholder="Password" name="uname" required>
+
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+            <button id="sign" type="button" class="btn btn-sm" placeholder="login" ><b>Log in</button>
+            <button id="register_btn" type="button" class="btn btn-sm" ><b>Register</button>
+            <button id="votePoll" type="button" class="btn btn-sm" ><b>Vote</button>
+            </div>
+          </div>
+
+          </div>
+        </div>
+
+
+    </div>
+
+
+  </form>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  <!--  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/js/bootstrap-dialog.min.js"></script>-->
+  <!--  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>-->
+  <!--  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+          $("#register_btn").click(function(){
+            $.ajax({
+              type: 'GET',
+              url: '/register',
+              success: function(data){
+                window.location.pathname="/register"
+              }
+            });
+            return false;
+          });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    $("#sign").click(function(){
+      //alert($("#login_name").val());
+      localStorage.setItem("login_name", $("#login_name").val());
+      var uname=$("#login_name").val();
+      var passw=$("#pass").val();
+      var obj = {username:uname,password:passw};
+
+      $.ajax({
+        type: 'POST',
+        url: '/check_user',
+        data: obj,
+        success: function(data){
+          if(data.length==0)
+          {
+                  alert("invalid username or password");
+
+          }
+          else
+          {
+
+              console.log("inside len");
+              window.location.pathname="/home"
+          }
+        }
+      });
+    /*  error: function(xhr,status,error){
+        alert("invalid username and password");
+      }*/
+
+    return false;
+    });
+    $("#votePoll").click(function(){
+      $.ajax({
+        type: 'GET',
+        url: '/viewAll',
+        success: function(data){
+          window.location.pathname="/viewAll"
+        }
+      });
+      return false;
+    });
+  });
+
+
+
+</script>
+</body>
+</html>

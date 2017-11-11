@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <title>Document</title>
+
+
+<style>
+text{
+
+}
+
+input[type=text], input[type=password] {
+    width: 91%;
+    height:80%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: none;
+    color:white;
+}
+input[type=radio]{
+
+  background-color: orange;
+}
+form {
+    border: 3px solid #f1f1f1;
+    background-color: olive;
+}
+button {
+    background-color:#25383C;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 80%;
+}
+table,tr,td {
+    text-align: left;
+    border: 3px olive;
+    border-spacing: 5px;
+    width:30%;
+    background-color: olive;
+    color:white;
+}
+th {
+    text-align: left;
+    border: 3px olive;
+    border-spacing: 5px;
+    width:90%;
+    background-color: white;
+}
+
+</style>
+<body>
+<form id="form">
+  <div class="row">
+    <div class="col-sm-1">
+    <Button id="back" class="btn btn-sm"> Back </Button>
+    </div>
+  </div>
+<br>
+<div class="container">
+  <div class="row">
+    <table id="ques" style="width:70%;  background-color: olive;"}>
+    </table>
+    <table id="options">
+    </table>
+    <Button class="btn btn-md" id="saveVote" style="width:45%;"><b>Save Vote</Button>
+    <Button class="btn btn-md" id="addOption" style="width:45%;"><b>Add Option</Button>
+
+
+  </div>
+
+</div>
+<br><br>
+
+<div class="container" >
+  <div class="row" id="chartContainer" style="height: 300px; width: 100%;color:orange;"></div>
+</div>
+</form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+
+<script type="text/javascript">
+var opt,p,q,u,o1,o2,o3,o4,v1,v2,v3,v4,rid=5;
+$(document).ready(function(){
+
+  $.ajax({
+    type: 'POST',
+    url: '/pollData',
+    //data: obj,
+    success: function(data){
+      if(data.length==0)
+      {
+              alert("No Polls Yet!!!");
+
+      }
+      else
+      {
+
+          console.log("polls so far....");
+
+        //populate the page
+
+        for (var i = 0; i < data.length; i++) {
+          p=data[i].pollname;
+          q=data[i].ques1;
+          u=data[i].username;
+          o1=data[i].option1;
+          o2=data[i].option2;
+          o3=data[i].option3;
+          o4=data[i].option4;
+          v1=data[i].vote1;
+          v2=data[i].vote2;
+          v3=data[i].vote3;
+          v4=data[i].vote4;
+
+          //set poll data
+
+          var thead="<tr><td><b>"+q+"<b></td></tr>";
+          $("#ques").append(thead);
+          if(o1=="")
+          {//hide
+          }
+          else {
+            var rad1="<tr><td colspan=1><input type=radio name=options id=option1 value="+o1+"checked=unchecked onclick=saveOption(1)></td><td>"+o1+"</td></tr>";
+            $("#options").append(rad1);
+          }
+          if(o2=="")
+          {//hide
+
+          }else {
+            var rad1="<tr><td><input type=radio name=options id=option2 value="+o2+"checked=unchecked onclick=saveOption(2)></td><td>"+o2+"</td></tr>";
+            $("#options").append(rad1);
+
+          }
+          if(o3=="")
+          {//hide
+          }
+          else{
+            var rad1="<tr><td><input type=radio name=options id=option3 value="+o3+"checked=unchecked onclick=saveOption(3)></td><td>"+o3+"</td></tr>";
+            $("#options").append(rad1);
+
+          }
+          if(o4=="")
+          {//hide
+          }
+          else {
+            var rad1="<tr><td><input type=radio name=options id=option4 value="+o4+"checked=unchecked onclick=saveOption(4)></td><td>"+o4+"</td></tr>";
+            $("#options").append(rad1);
+
+          }
+        }
+        var chart = new CanvasJS.Chart("chartContainer", {
+
+          title:{
+            text:p
+
+        //  text:"pie"
+          },
+          data: [//array of dataSeries
+            { //dataSeries object
+
+             /*** Change type "column" to "bar", "area", "line" or "pie"***/
+             type: "pie",
+             dataPoints: [
+             { label:o1, y: v1 },
+             { label: o2, y: v2 },
+             { label: o3, y: v3 },
+             { label: o4, y: v4 },
+
+             ]
+           }
+           ]
+         });
+
+        chart.render();
+
+      }
+
+  }
+  });
+  $("#back").click(function(){
+    $.ajax({
+      type: 'GET',
+      url: '/viewAll',
+      success: function(data){
+        window.location.pathname="/viewAll"
+      }
+    });
+    return false;
+  });
+  $("#addOption").click(function(){
+    rid=rid+1;
+    var rad1="<tr><td><input type=radio name=options id="+rid+"checked=unchecked onclick=saveOption(4)></td><td><input type=text ></td></tr>";
+    $("#options").append(rad1);
+});
+////////////////////////////////////////////
+  $("#saveVote").click(function(){
+    var obj={
+      pollname:p,
+      username:u,
+      option:opt
+
+    };
+
+    console.log("option"+opt+" "+obj.option)
+    $.ajax({
+      type:   'POST',
+      url: '/saveVote',
+      data:obj,
+      success: function(data){
+        window.location.pathname="/viewAll"
+      }
+    });
+    return false;
+  });
+
+});
+function saveOption(id)
+{
+  console.log("id="+id);
+  opt=id;
+}
+</script>
+</body>
+</html>
